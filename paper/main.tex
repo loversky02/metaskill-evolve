@@ -120,9 +120,18 @@ economically interesting regime.
 behaviour reads a directive from its own meta file, so the slow loop can causally
 improve the pipeline. With proxy backbones of increasing competence, the meta-gain
 falls monotonically to zero (Table~\ref{tab:law-toy}). \emph{These are toy numbers
-that verify the mechanism and the harness, not benchmark results.} Live
-confirmation on Gemma-4 E2B/E4B (local MLX) and GPT-5.5/Claude (gateway) is
-ongoing; see Table~\ref{tab:law-live} (\textsc{TODO}).
+that verify the mechanism and the harness, not benchmark results.}
+
+\textbf{Live probe (null).} We ran the same procedure on real backbones---Claude
+Haiku~4.5 and Opus~4.8 through an OpenAI-compatible gateway, and a local Gemma-2-2B
+via MLX---on small multi-step word-problem sets. Every backbone reached ceiling
+utility \emph{before any evolution} ($U_0{=}1.0$), so the meta-gain was $0$ for all
+of them (Table~\ref{tab:law-live}). This is a null result about the \emph{task},
+not the method: modern instruction-tuned models---even at 2B---leave no headroom on
+short word problems, so neither the fast loop nor the recursion has anything to
+improve. A decisive live test of the backbone-strength law needs a benchmark hard
+enough to hold the base policy below ceiling (e.g.\ SealQA); we report the null
+honestly and leave that larger run to future work.
 
 \begin{table}[h]\centering
 \caption{Mechanism study on a toy with proxy backbones (offline). Meta-gain
@@ -140,15 +149,17 @@ strong & 1.00 & 1.00 & $+0.00$\\
 \end{table}
 
 \begin{table}[h]\centering
-\caption{\textsc{TODO} (live): meta-gain vs.\ real backbone strength.}
+\caption{Live probe (null): every backbone is already at ceiling on the small
+word-problem set ($U_0{=}1.0$), so the recursion has no headroom to exploit. The
+law needs a harder benchmark to test, not stronger claims from this data.}
 \label{tab:law-live}
-\begin{tabular}{lccc}
+\begin{tabular}{lcccc}
 \toprule
-Backbone & Single-level & Two-level & Meta-gain\\
+Backbone & $U_0$ & Single-level & Two-level & Meta-gain\\
 \midrule
-Gemma-4 E2B (MLX) & \textsc{todo} & \textsc{todo} & \textsc{todo}\\
-Gemma-4 E4B (MLX) & \textsc{todo} & \textsc{todo} & \textsc{todo}\\
-Claude / GPT-5.5  & \textsc{todo} & \textsc{todo} & \textsc{todo}\\
+Gemma-2-2B (MLX, local)   & 1.00 & 1.00 & 1.00 & $+0.00$\\
+Claude Haiku 4.5 (gateway) & 1.00 & 1.00 & 1.00 & $+0.00$\\
+Claude Opus 4.8 (gateway)  & 1.00 & \multicolumn{3}{c}{ceiling (run not completed)}\\
 \bottomrule
 \end{tabular}
 \end{table}
