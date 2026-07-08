@@ -7,6 +7,7 @@ from .evolve import EvolveState, run_evolution
 from .fast_loop import FastState, fast_iteration, run_fast
 from .llm import LLM, CountingLLM, MLXClient, MockLLM, OpenAICompatClient, make_llm
 from .retriever_dpp import dpp_retrieve
+from .search import SearchQATask, SearchTool
 from .skills import META_COMPONENTS, SEED_META, SEED_TASK, SkillStore
 from .slow_loop import meta_productivity, slow_iteration
 from .synthetic import LetterCountTask
@@ -24,4 +25,5 @@ __all__ = [
     "agents", "run_fast", "fast_iteration", "FastState",
     "run_evolution", "EvolveState", "slow_iteration", "meta_productivity",
     "QATask", "ALFWorldTask", "MockAlfEnv", "load_gsm8k", "load_sealqa",
+    "SearchTool", "SearchQATask",
 ]
