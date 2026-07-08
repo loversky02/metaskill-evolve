@@ -20,7 +20,14 @@ Resume phrase: **"tiếp tục metaskill-evolve"**
 - **SHIPPED + paper + TIE-IN 1.** Public: github.com/loversky02/metaskill-evolve
   (main). `paper/main.tex` compiles (pdflatex → main.pdf). σ Retriever now uses a
   vendored greedy-DPP (`mse/retriever_dpp.py`, numpy-optional + recency fallback) —
-  the automem/robocurate tie-in. **Left: TIE-IN 2 (super-agent axis-4) + LIVE runs.**
+  the automem/robocurate tie-in.
+- **TIE-IN 2 done+pushed** (super-agent axis-4 EVO {none,fast_only,two_level}).
+- **LIVE probe = NULL** (2026-07-08): haiku, opus, and local gemma-2-2b (MLX) all
+  reached U0=1.0 *before* evolving on the word-problem set → meta-gain 0 for all.
+  Honest null about the TASK (too easy, even 2B no headroom), not the method; paper
+  §4.2 + tab:law-live report it. MLXClient now works (chat-template + retry).
+  **Left: a HARD-benchmark run (SealQA-scale) for a real live law-test; E3
+  vi-gsm8k; E4 matplotlib fig.** The offline mechanism study stays THE clean demo.
 
 ## Paper facts locked (arXiv:2607.05297)
 - Backbone: **Gemma-4 31B, frozen**, shared by all 5 agents.
