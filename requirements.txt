@@ -1,0 +1,8 @@
+# Core engine (M1-M3) needs only the standard library + pytest.
+pytest>=8.0
+
+# Optional extras (install as needed):
+#   openai>=1.0    # provider="openai": OpenAI-compatible endpoints (9router -> GPT-5.5/Claude)
+#   mlx-lm         # provider="mlx":   local Apple-Silicon backbone (Gemma-4 E2B/E4B)
+#   alfworld       # M4: ALFWorld text-only benchmark (CPU, no GPU)
+#   datasets       # M4: load SealQA (vtllms/sealqa) / OfficeQA (databricks/officeqa, gated)

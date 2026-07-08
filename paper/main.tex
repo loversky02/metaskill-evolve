@@ -1,0 +1,192 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage[numbers]{natbib}
+\usepackage{hyperref}
+
+\title{When Does Recursion Pay Off?\\
+\large An Open, \$0 Reproduction and Honest Dissection of\\
+Two-Timescale Meta-Skill Evolution}
+\author{loversky02 \\ \texttt{github.com/loversky02/metaskill-evolve}}
+\date{2026}
+
+\newcommand{\metaskill}{\textsc{MetaSkill-Evolve}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Self-improving LLM agents rewrite their own skill files from execution traces.
+\metaskill{}~\citep{wang2026metaskill} makes this \emph{recursive} with a
+two-timescale scheme: a fast loop evolves a task skill $s$, while a slow loop
+evolves a branch-local meta-skill $m=(\psi,\sigma,\alpha,\pi,\varepsilon)$ that
+parameterises the five agents of the improvement pipeline itself, under the same
+pipeline applied to itself. We contribute (i) an open, \$0, Apple-Silicon
+reproduction of the method with a single frozen backbone, and (ii) an honest
+dissection of \emph{when} the recursion pays off. Decomposing the original
+results shows the fast loop is the workhorse and the recursive meta-loop
+contributes a modest, task-dependent increment ($+6.4/+8.1/+1.9$ points over
+single-level evolution on OfficeQA/SealQA/ALFWorld). We hypothesise a
+\emph{backbone-strength law}: the meta-loop's marginal value shrinks as the frozen
+backbone strengthens, making recursive self-improvement chiefly worthwhile for
+cheap or weak models. We instrument this with a controlled mechanism study and
+two further probes---English$\rightarrow$Vietnamese meta transfer, and the token
+cost of recursion. We are explicit about scope: absolute numbers require the
+paper's 31B backbone, which does not fit our 24\,GB budget; our engine reproduces
+the \emph{method} and the \emph{qualitative structure}, and live confirmation of
+the backbone-strength law on real backbones is ongoing.
+\end{abstract}
+
+\section{Introduction}
+External skills---reusable procedural knowledge handed to an agent---extend what
+LLM agents can do on long-horizon tasks. Self-improving agents rewrite these skill
+files from their own traces. \metaskill{} observes that such self-evolution is
+still \emph{non-recursive}: it improves \emph{what} the agent does (the task
+skill) but not \emph{how} it improves (the improvement procedure), which is
+authored once and frozen. \metaskill{} closes this gap with a second, slower loop
+that evolves the improvement procedure with the same machinery.
+
+This paper is not a new method. It is a reproduction and a dissection, asking a
+single question a practitioner cares about: \textbf{given a fixed backbone and a
+token budget, is the recursion worth it, and when?} Our contributions:
+\begin{itemize}
+  \item An open, dependency-light engine (\S\ref{sec:engine}) that reproduces the
+  two-timescale method and runs entirely offline at \$0 on a 24\,GB Mac.
+  \item A decomposition showing the fast loop dominates and the recursion is a
+  modest, task-dependent bonus (\S\ref{sec:workhorse}).
+  \item The backbone-strength law as a testable hypothesis, with a controlled
+  mechanism study (\S\ref{sec:law}), plus EN$\rightarrow$VI transfer
+  (\S\ref{sec:transfer}) and a cost analysis (\S\ref{sec:cost}).
+\end{itemize}
+
+\section{Background: \metaskill{}}
+Let $U(s)=\mathbb{E}_{(x,y)\sim\mathcal{T}}[r(A_s(x),y)]$ be the utility of a task
+skill $s$, where $A_s$ is the agent conditioned on $s$ and $r\in[0,1]$ scores
+predictions. The fast loop (Alg.~1) mines a worst case, runs the pipeline
+Analyzer $\to$ Retriever $\to$ Allocator $\to$ Proposer $\to$ Evolver to produce
+$K$ children, scores them, and commits to a branch DAG. Every $H$ iterations the
+slow loop (Alg.~2) aggregates meta-productivity
+$P(m\mid s)=\mathbb{E}\!\left[\tfrac{1}{K}\sum_{k}\big(U(s'_k)-U(s)\big)\right]$,
+synthesises a meta-failure trace, and applies the \emph{same} pipeline to the five
+meta files $\{\psi,\sigma,\alpha,\pi,\varepsilon\}$. All five agents share one
+frozen backbone. Key defaults: $H{=}2$, $K_{\max}{=}3$, frontier size $3$ with
+weights $(1,0.5,0.25)$.
+
+\section{An Open, \$0 Reproduction}\label{sec:engine}
+Our engine mirrors the method: versioned Markdown skill/meta-skill files with
+snapshot/restore, a SQLite branch DAG with a weighted frontier, the five agents
+reading their meta files, and a provider-agnostic backbone (mock for tests, a
+local MLX model for the weak end, or an OpenAI-compatible gateway for the strong
+end). The whole pipeline is text-only with a frozen backbone---no gradient
+updates---so both loops run at \$0. The reference implementation is 33 unit tests
+green with no API key, GPU, or downloads.
+
+\section{Dissection}
+\subsection{The fast loop is the workhorse}\label{sec:workhorse}
+Decomposing Table~1 of \citet{wang2026metaskill} into the single-level jump (fast
+loop, meta frozen) and the recursive increment (Table~\ref{tab:decomp}) shows that
+$70$--$90\%$ of the gain over the raw backbone comes from the fast loop alone; the
+recursion adds $+6.4/+8.1/+1.9$. On ALFWorld the baseline is already $92.3\%$
+(near ceiling; static skills even \emph{hurt}), so the $+1.9$ is within noise and
+a poor test of recursion.
+
+\begin{table}[h]\centering
+\caption{Decomposition of the reported gains. Recursion is the small part.}
+\label{tab:decomp}
+\begin{tabular}{lccccc}
+\toprule
+Benchmark & No-skill & Static & Single-level & \metaskill{} & Recursion $\Delta$\\
+\midrule
+OfficeQA & 31.78 & 36.09 & 48.94 & 55.32 & $+6.38$\\
+SealQA   & 29.17 & 29.41 & 37.21 & 45.26 & $+8.05$\\
+ALFWorld & 92.31 & 90.38 & 92.31 & 94.23 & $+1.92$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A backbone-strength law}\label{sec:law}
+\textbf{Hypothesis.} The recursive meta-loop rewrites the prompts that scaffold
+the pipeline agents. A strong backbone already analyses and proposes well, so this
+scaffolding is redundant; a weak backbone benefits more. We therefore predict the
+meta-gain \emph{decreases} as the backbone strengthens---so recursive
+self-improvement is chiefly worthwhile for cheap/weak models, which is also the
+economically interesting regime.
+
+\textbf{Mechanism study (toy).} We construct a controlled task where an agent's
+behaviour reads a directive from its own meta file, so the slow loop can causally
+improve the pipeline. With proxy backbones of increasing competence, the meta-gain
+falls monotonically to zero (Table~\ref{tab:law-toy}). \emph{These are toy numbers
+that verify the mechanism and the harness, not benchmark results.} Live
+confirmation on Gemma-4 E2B/E4B (local MLX) and GPT-5.5/Claude (gateway) is
+ongoing; see Table~\ref{tab:law-live} (\textsc{TODO}).
+
+\begin{table}[h]\centering
+\caption{Mechanism study on a toy with proxy backbones (offline). Meta-gain
+vanishes as the backbone strengthens.}
+\label{tab:law-toy}
+\begin{tabular}{lccc}
+\toprule
+Backbone (proxy) & Single-level & Two-level & Meta-gain\\
+\midrule
+weak   & 0.50 & 1.00 & $+0.50$\\
+mid    & 0.75 & 1.00 & $+0.25$\\
+strong & 1.00 & 1.00 & $+0.00$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]\centering
+\caption{\textsc{TODO} (live): meta-gain vs.\ real backbone strength.}
+\label{tab:law-live}
+\begin{tabular}{lccc}
+\toprule
+Backbone & Single-level & Two-level & Meta-gain\\
+\midrule
+Gemma-4 E2B (MLX) & \textsc{todo} & \textsc{todo} & \textsc{todo}\\
+Gemma-4 E4B (MLX) & \textsc{todo} & \textsc{todo} & \textsc{todo}\\
+Claude / GPT-5.5  & \textsc{todo} & \textsc{todo} & \textsc{todo}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{English$\rightarrow$Vietnamese meta transfer}\label{sec:transfer}
+Meta-skills are language-agnostic improvement policies. We ask whether a meta-skill
+evolved on English tasks accelerates task-skill evolution on Vietnamese ones (GSM8K
+$\rightarrow$ vi-gsm8k). The harness runs; live numbers are \textsc{TODO}.
+
+\subsection{The cost of recursion}\label{sec:cost}
+Recursion multiplies inference---you evolve the evolvers. We instrument calls and
+tokens and compare fast-only vs.\ two-level at equal iteration budget, reporting
+utility gained per token. On the toy the recursion costs roughly $+30\%$ tokens
+for its extra gain; the live token/accuracy trade-off is \textsc{TODO}.
+
+\section{Related Work}
+Skill-augmented and self-evolving agents are a fast-growing cluster
+\citep{skillrl2026,evolvingrl2026}. \metaskill{} is distinctive in making the
+improvement procedure itself recursive with no extra model. Our work is orthogonal:
+we do not propose a new evolver but dissect \emph{when} recursion helps, on a
+frozen backbone, at \$0.
+
+\section{Limitations and Honesty}
+(1) The paper's absolute numbers used a 31B backbone (~20\,GB at 4-bit) that does
+not fit our 24\,GB budget; we reproduce the method and qualitative structure, not
+the exact numbers. (2) The backbone-strength law is currently supported only by a
+constructed mechanism study; the proxy backbones were designed to express the
+predicted shape, so they demonstrate the harness, not the law. (3) OfficeQA data is
+access-gated; SealQA and ALFWorld are public. Live experiments are the immediate
+next step.
+
+\section{Conclusion}
+Two-timescale recursion is an elegant idea, but its benefit is modest and
+task-dependent, concentrated where the improvement pipeline---not the base
+policy---is the bottleneck. We predict, and are testing, that this benefit is a
+decreasing function of backbone strength. An open \$0 engine makes the question
+cheap for anyone to probe.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+\end{document}

@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.db
+*.sqlite
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
+runs/
+data/
+# latex build artifacts
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.pdf
