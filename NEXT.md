@@ -22,12 +22,15 @@ Resume phrase: **"tiếp tục metaskill-evolve"**
   vendored greedy-DPP (`mse/retriever_dpp.py`, numpy-optional + recency fallback) —
   the automem/robocurate tie-in.
 - **TIE-IN 2 done+pushed** (super-agent axis-4 EVO {none,fast_only,two_level}).
-- **LIVE probe = NULL** (2026-07-08): haiku, opus, and local gemma-2-2b (MLX) all
-  reached U0=1.0 *before* evolving on the word-problem set → meta-gain 0 for all.
-  Honest null about the TASK (too easy, even 2B no headroom), not the method; paper
-  §4.2 + tab:law-live report it. MLXClient now works (chat-template + retry).
-  **Left: a HARD-benchmark run (SealQA-scale) for a real live law-test; E3
-  vi-gsm8k; E4 matplotlib fig.** The offline mechanism study stays THE clean demo.
+- **LIVE probe = both failure modes** (2026-07-08): word problems → CEILING
+  (haiku/opus/gemma-2-2b all U0=1.0, meta-gain 0); SealQA Seal-Hard bare-LLM → FLOOR
+  (haiku 0/12, no knowledge/tools). Recursion only helps the narrow middle
+  (procedure-bottleneck). Paper §4.2 + tab:law-live report both. MLXClient works
+  (chat-template + retry); a cheap U0-probe-before-big-run saved two null runs.
+  **Left (optional, bigger builds): a search-augmented agent OR a moderate
+  procedure-bottlenecked task for a positive live signal; E3 vi-gsm8k; E4 fig.**
+  Offline mechanism study stays THE clean demo; live conclusion = honest
+  narrow-regime characterisation.
 
 ## Paper facts locked (arXiv:2607.05297)
 - Backbone: **Gemma-4 31B, frozen**, shared by all 5 agents.
