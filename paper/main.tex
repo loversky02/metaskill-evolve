@@ -137,7 +137,24 @@ skill-evolution actually pays off: tasks whose bottleneck is an \emph{improvable
 procedure}, not triviality (ceiling) or missing knowledge/tools (floor).
 \emph{Characterising that regime---rather than assuming recursion always
 helps---is the honest empirical contribution here.} Table~\ref{tab:law-live}
-records both live nulls.
+records all four live failure modes.
+
+\textbf{Two escape attempts, two more modes.} To move off ceiling/floor we built
+two extensions (both released): a keyless search-augmented agent (so SealQA becomes
+a reason-over-noisy-results task, not a knowledge test), and a synthetic
+\emph{procedure-bottleneck} task (letter counting, where a systematic-enumeration
+skill should help). Probing real backbones exposed two further modes.
+\emph{(iii) Too weak to self-improve}: a local Gemma-2-2B has genuine headroom on
+letter counting ($U_0{=}0.33$), yet the fast and slow loops leave it unchanged
+($+0.00$)---the same 2B that must \emph{author} the skill cannot write a useful one.
+\emph{(iv) Noise-dominated}: Claude Haiku on a harder count has headroom
+($U_0{\approx}0.4$--$0.6$) and is capable, but on a small stochastic eval the loop
+chases sampling noise and can \emph{degrade} the skill (a run gave single/two-level
+$0.4/0.0$ against $U_0{=}0.6$). A clean positive live signal thus needs the paper's
+fuller regime \emph{simultaneously}: a capable backbone, tools/context, and a large
+low-variance eval---which our deliberately minimal \$0 bare-LLM reproduction does
+not assemble. The offline mechanism study stays the controlled demonstration; live,
+we offer a taxonomy of failure modes, which we think is the more honest deliverable.
 
 \begin{table}[h]\centering
 \caption{Mechanism study on a toy with proxy backbones (offline). Meta-gain
@@ -155,19 +172,19 @@ strong & 1.00 & 1.00 & $+0.00$\\
 \end{table}
 
 \begin{table}[h]\centering
-\caption{Live probe: both failure modes. On easy word problems the base policy is
-already at ceiling ($U_0{=}1.0$); on knowledge-hard SealQA (no tools) it is at the
-floor ($U_0{=}0.0$). Either way the recursion has no headroom, so the meta-gain is
-$0$ --- the law needs a procedure-bottlenecked task in between, not stronger claims
-from this data.}
+\caption{Live probe: four failure modes bracket the narrow regime where recursive
+skill-evolution helps. A clean positive needs headroom AND a capable-enough backbone
+AND a low-variance eval \emph{at once} --- which a minimal \$0 bare-LLM setup does
+not assemble.}
 \label{tab:law-live}
-\begin{tabular}{llcccc}
+\begin{tabular}{llccl}
 \toprule
-Task & Backbone & $U_0$ & Single & Two-level & Meta-gain\\
+Task & Backbone & $U_0$ & Two-level & Failure mode\\
 \midrule
-Word problems & Gemma-2-2B (MLX)   & 1.00 & 1.00 & 1.00 & $+0.00$ (ceiling)\\
-Word problems & Claude Haiku 4.5   & 1.00 & 1.00 & 1.00 & $+0.00$ (ceiling)\\
-SealQA Seal-Hard & Claude Haiku 4.5 (no tools) & 0.00 & \multicolumn{3}{c}{floor -- not run}\\
+Word problems     & haiku / opus / Gemma-2-2B  & 1.00 & 1.00 & ceiling (trivial)\\
+SealQA Seal-Hard  & Claude Haiku (no tools)    & 0.00 & ---  & floor (no knowledge)\\
+Letter-count      & Gemma-2-2B (MLX)           & 0.33 & 0.33 & too weak to author skills\\
+Letter-count (hard) & Claude Haiku 4.5         & 0.60 & 0.00 & noise-dominated (small eval)\\
 \bottomrule
 \end{tabular}
 \end{table}
