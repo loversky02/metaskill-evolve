@@ -101,10 +101,19 @@ class MLXClient:
         self.max_tokens = max_tokens
 
     def complete(self, system: str, user: str, *, json_mode: bool = False) -> str:
-        prompt = f"<system>\n{system}\n</system>\n<user>\n{user}\n</user>\n"
-        return self._generate(
-            self._model, self._tokenizer, prompt=prompt, max_tokens=self.max_tokens
-        )
+        tok = self._tokenizer
+        prompt = None
+        for msgs in ([{"role": "system", "content": system}, {"role": "user", "content": user}],
+                     [{"role": "user", "content": f"{system}\n\n{user}"}]):
+            try:  # some templates (e.g. Gemma) reject a system role -> merge + retry
+                prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, tokenize=False)
+                break
+            except Exception:
+                continue
+        if prompt is None:
+            prompt = f"{system}\n\n{user}\n"
+        return self._generate(self._model, self._tokenizer, prompt=prompt,
+                              max_tokens=self.max_tokens)
 
 
 def make_llm(backbone) -> LLM:

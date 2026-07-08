@@ -73,6 +73,8 @@ BACKBONES = {
     # weak end -- local Apple-Silicon, fits 24 GB
     "gemma-4-e2b": BackboneSpec(name="mlx-community/gemma-4-e2b-it-4bit", provider="mlx"),
     "gemma-4-e4b": BackboneSpec(name="mlx-community/gemma-4-e4b-it-4bit", provider="mlx"),
+    # known-good reliably-loadable weak backbone (genuinely below the Claude tier)
+    "gemma-2-2b": BackboneSpec(name="mlx-community/gemma-2-2b-it-4bit", provider="mlx"),
     # paper's backbone -- needs >24 GB locally, or a hosted route
     "gemma-4-31b": BackboneSpec(name="mlx-community/gemma-4-31B-it-OptiQ-4bit", provider="mlx"),
     # via a 9router-style OpenAI-compatible gateway (set OPENAI_BASE_URL + key).
