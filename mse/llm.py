@@ -55,20 +55,30 @@ class OpenAICompatClient:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self._client = OpenAI(
-            base_url=base_url or os.environ.get("OPENAI_BASE_URL"),
-            api_key=api_key or os.environ.get("OPENAI_API_KEY", "sk-none"),
+            base_url=(base_url or os.environ.get("OPENAI_BASE_URL")
+                      or os.environ.get("NINEROUTER_BASE_URL")),
+            api_key=(api_key or os.environ.get("OPENAI_API_KEY")
+                     or os.environ.get("NINEROUTER_API_KEY") or "sk-none"),
         )
 
     def complete(self, system: str, user: str, *, json_mode: bool = False) -> str:
-        kwargs = {"response_format": {"type": "json_object"}} if json_mode else {}
+        # Router quirks: cc/* (Claude) reject `temperature`; gpt-5.5 only accepts
+        # temperature=1. We skip response_format for compatibility and rely on the
+        # tolerant JSON parsing in agents._parse_json.
+        kwargs = {"max_tokens": self.max_tokens}
+        m = self.model
+        if m.startswith("cc/"):
+            pass  # Claude via the router rejects a temperature argument
+        elif m.startswith("gpt-5") or m.startswith("cx/"):
+            kwargs["temperature"] = 1.0
+        else:
+            kwargs["temperature"] = self.temperature
         resp = self._client.chat.completions.create(
-            model=self.model,
+            model=m,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
             **kwargs,
         )
         return resp.choices[0].message.content or ""

@@ -75,15 +75,21 @@ BACKBONES = {
     "gemma-4-e4b": BackboneSpec(name="mlx-community/gemma-4-e4b-it-4bit", provider="mlx"),
     # paper's backbone -- needs >24 GB locally, or a hosted route
     "gemma-4-31b": BackboneSpec(name="mlx-community/gemma-4-31B-it-OptiQ-4bit", provider="mlx"),
-    # strong end -- via 9router (OpenAI-compatible)
+    # via a 9router-style OpenAI-compatible gateway (set OPENAI_BASE_URL + key).
+    # Router model-id prefixes: cc/ = Claude, plain/cx/ = GPT. Note quirks handled
+    # in OpenAICompatClient: cc/* reject `temperature`; gpt-5.5 only accepts 1.
+    "claude-haiku": BackboneSpec(name="cc/claude-haiku-4-5-20251001", provider="openai"),
+    "claude-opus": BackboneSpec(name="cc/claude-opus-4-8", provider="openai"),
     "gpt-5.5": BackboneSpec(name="gpt-5.5", provider="openai"),
-    "claude": BackboneSpec(name="claude-sonnet-5", provider="openai"),
     # offline / tests
     "mock": BackboneSpec(name="mock", provider="mock"),
 }
 
-# approximate capability ladder for the sweep (weak -> strong)
-STRENGTH_ORDER = ["gemma-4-e2b", "gemma-4-e4b", "gemma-4-31b", "claude", "gpt-5.5"]
+# approximate capability ladder for the sweep (weak -> strong). The API tail
+# (haiku -> opus -> gpt-5.5) lets E1 run its whole law on the gateway, no MLX
+# download needed; the local gemmas cover the truly-weak end.
+STRENGTH_ORDER = ["gemma-4-e2b", "gemma-4-e4b", "claude-haiku", "gemma-4-31b",
+                  "claude-opus", "gpt-5.5"]
 
 
 def backbone(key: str) -> BackboneSpec:
