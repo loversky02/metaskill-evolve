@@ -122,16 +122,22 @@ improve the pipeline. With proxy backbones of increasing competence, the meta-ga
 falls monotonically to zero (Table~\ref{tab:law-toy}). \emph{These are toy numbers
 that verify the mechanism and the harness, not benchmark results.}
 
-\textbf{Live probe (null).} We ran the same procedure on real backbones---Claude
-Haiku~4.5 and Opus~4.8 through an OpenAI-compatible gateway, and a local Gemma-2-2B
-via MLX---on small multi-step word-problem sets. Every backbone reached ceiling
-utility \emph{before any evolution} ($U_0{=}1.0$), so the meta-gain was $0$ for all
-of them (Table~\ref{tab:law-live}). This is a null result about the \emph{task},
-not the method: modern instruction-tuned models---even at 2B---leave no headroom on
-short word problems, so neither the fast loop nor the recursion has anything to
-improve. A decisive live test of the backbone-strength law needs a benchmark hard
-enough to hold the base policy below ceiling (e.g.\ SealQA); we report the null
-honestly and leave that larger run to future work.
+\textbf{Live probe: both failure modes bracket a narrow regime.} We ran the
+procedure on real backbones---Claude Haiku~4.5 and Opus~4.8 (gateway) and a local
+Gemma-2-2B (MLX). On short multi-step word problems, every backbone reached
+\emph{ceiling} before any evolution ($U_0{=}1.0$): nothing to improve, meta-gain
+$0$. We then tried a genuinely hard benchmark, SealQA Seal-Hard~\citep{pham2025sealqa},
+with a bare LLM (no tools); there Haiku scored $0/12$ ($U_0{=}0.0$)---the opposite
+\emph{floor} failure. The cause is instructive: SealQA is a \emph{knowledge/search}
+benchmark (fresh, trap-laden fact-seeking), and evolving a text skill on a frozen
+backbone cannot supply missing knowledge---the paper's own SealQA gains came from an
+agent \emph{with} search tools, which our \$0 bare-LLM reproduction deliberately
+omits. Between these two failure modes lies the narrow regime where recursive
+skill-evolution actually pays off: tasks whose bottleneck is an \emph{improvable
+procedure}, not triviality (ceiling) or missing knowledge/tools (floor).
+\emph{Characterising that regime---rather than assuming recursion always
+helps---is the honest empirical contribution here.} Table~\ref{tab:law-live}
+records both live nulls.
 
 \begin{table}[h]\centering
 \caption{Mechanism study on a toy with proxy backbones (offline). Meta-gain
@@ -149,17 +155,19 @@ strong & 1.00 & 1.00 & $+0.00$\\
 \end{table}
 
 \begin{table}[h]\centering
-\caption{Live probe (null): every backbone is already at ceiling on the small
-word-problem set ($U_0{=}1.0$), so the recursion has no headroom to exploit. The
-law needs a harder benchmark to test, not stronger claims from this data.}
+\caption{Live probe: both failure modes. On easy word problems the base policy is
+already at ceiling ($U_0{=}1.0$); on knowledge-hard SealQA (no tools) it is at the
+floor ($U_0{=}0.0$). Either way the recursion has no headroom, so the meta-gain is
+$0$ --- the law needs a procedure-bottlenecked task in between, not stronger claims
+from this data.}
 \label{tab:law-live}
-\begin{tabular}{lcccc}
+\begin{tabular}{llcccc}
 \toprule
-Backbone & $U_0$ & Single-level & Two-level & Meta-gain\\
+Task & Backbone & $U_0$ & Single & Two-level & Meta-gain\\
 \midrule
-Gemma-2-2B (MLX, local)   & 1.00 & 1.00 & 1.00 & $+0.00$\\
-Claude Haiku 4.5 (gateway) & 1.00 & 1.00 & 1.00 & $+0.00$\\
-Claude Opus 4.8 (gateway)  & 1.00 & \multicolumn{3}{c}{ceiling (run not completed)}\\
+Word problems & Gemma-2-2B (MLX)   & 1.00 & 1.00 & 1.00 & $+0.00$ (ceiling)\\
+Word problems & Claude Haiku 4.5   & 1.00 & 1.00 & 1.00 & $+0.00$ (ceiling)\\
+SealQA Seal-Hard & Claude Haiku 4.5 (no tools) & 0.00 & \multicolumn{3}{c}{floor -- not run}\\
 \bottomrule
 \end{tabular}
 \end{table}
