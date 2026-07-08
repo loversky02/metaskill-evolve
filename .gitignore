@@ -8,10 +8,9 @@ venv/
 .DS_Store
 runs/
 data/
-# latex build artifacts
+# latex build artifacts (but DO ship the compiled paper/main.pdf)
 paper/*.aux
 paper/*.log
 paper/*.bbl
 paper/*.blg
 paper/*.out
-paper/*.pdf
