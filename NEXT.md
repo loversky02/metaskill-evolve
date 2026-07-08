@@ -14,9 +14,13 @@ Resume phrase: **"tiếp tục metaskill-evolve"**
 - **M4 (benchmark adapters) DONE.** `mse/benchmarks.py` (`QATask`, `ALFWorldTask`,
   `MockAlfEnv`, `load_sealqa`/`load_gsm8k`) + `mse/scoring.py` (4 scorers).
 - **M5 (four experiment harnesses) DONE.** `experiments/e1..e4` each with an
-  offline `smoke()`. **33 tests pass, $0.** Smoke E1 meta-gain +0.50/+0.25/+0.00
+  offline `smoke()`. **36 tests pass, $0.** Smoke E1 meta-gain +0.50/+0.25/+0.00
   (weak/mid/strong) — the headline law; E3 EN→VI transfer helps; E4 two-level
   +30% tokens for its extra gain. (Toy proxy numbers, mechanism check only.)
+- **SHIPPED + paper + TIE-IN 1.** Public: github.com/loversky02/metaskill-evolve
+  (main). `paper/main.tex` compiles (pdflatex → main.pdf). σ Retriever now uses a
+  vendored greedy-DPP (`mse/retriever_dpp.py`, numpy-optional + recency fallback) —
+  the automem/robocurate tie-in. **Left: TIE-IN 2 (super-agent axis-4) + LIVE runs.**
 
 ## Paper facts locked (arXiv:2607.05297)
 - Backbone: **Gemma-4 31B, frozen**, shared by all 5 agents.
