@@ -37,10 +37,16 @@ def analyze(llm, psi: str, task_desc: str, failed_case: str, reward: float) -> T
     return str(d.get("tag", "unknown")), str(d.get("analysis", ""))
 
 
-def retrieve(llm, sigma: str, tag: str, pool: List[str], l_same: int) -> List[str]:
-    """σ: select inspirations. Toy = most recent same-branch edits; the
-    DPP-selector tie-in (automem/robot-lfd) lands at M4."""
-    return [s for s in pool if s][-l_same:]
+def retrieve(llm, sigma: str, tag: str, pool: List[str], l_same: int,
+             *, diverse: bool = True) -> List[str]:
+    """σ: select up to ``l_same`` inspirations from past edits. With ``diverse``
+    (default) a greedy-DPP picks a varied subset (the automem/robocurate tie-in);
+    otherwise fall back to the most recent edits."""
+    items = [s for s in pool if s]
+    if diverse:
+        from .retriever_dpp import dpp_retrieve
+        return dpp_retrieve(items, l_same)
+    return items[-l_same:]
 
 
 def allocate(llm, alpha: str, analysis: str, k_max: int) -> int:

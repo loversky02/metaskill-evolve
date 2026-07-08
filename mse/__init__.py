@@ -5,7 +5,8 @@ from .config import BACKBONES, STRENGTH_ORDER, BackboneSpec, Config, backbone, f
 from .dag import DAG, Node
 from .evolve import EvolveState, run_evolution
 from .fast_loop import FastState, fast_iteration, run_fast
-from .llm import LLM, MLXClient, MockLLM, OpenAICompatClient, make_llm
+from .llm import LLM, CountingLLM, MLXClient, MockLLM, OpenAICompatClient, make_llm
+from .retriever_dpp import dpp_retrieve
 from .skills import META_COMPONENTS, SEED_META, SEED_TASK, SkillStore
 from .slow_loop import meta_productivity, slow_iteration
 from .tasks import RuleTask, Task, evaluate, worst_example
@@ -15,7 +16,8 @@ __version__ = "0.1.0"
 __all__ = [
     "BackboneSpec", "Config", "faithful", "backbone", "BACKBONES", "STRENGTH_ORDER",
     "DAG", "Node",
-    "LLM", "MockLLM", "OpenAICompatClient", "MLXClient", "make_llm",
+    "LLM", "MockLLM", "OpenAICompatClient", "MLXClient", "make_llm", "CountingLLM",
+    "dpp_retrieve",
     "SkillStore", "META_COMPONENTS", "SEED_META", "SEED_TASK",
     "Task", "RuleTask", "evaluate", "worst_example",
     "agents", "run_fast", "fast_iteration", "FastState",
