@@ -27,12 +27,18 @@ from mse.skills import SkillStore
 # dataset download. A good procedural skill (evolved by the pipeline) should help a
 # weaker backbone more than a strong one.
 DEFAULT_TASK = [
-    {"question": "A shelf holds 3 boxes; each box has 7 books. How many books total?", "answer": "21"},
-    {"question": "Sarah had 20 apples, gave away 8, then bought 5 more. How many now?", "answer": "17"},
-    {"question": "A train goes 60 km/h for 2.5 hours. How far (km)?", "answer": "150"},
-    {"question": "A shirt costs 24 and is 25% off. What is the sale price?", "answer": "18"},
-    {"question": "5 teams of 4 players each; 3 players are absent. How many present?", "answer": "17"},
-    {"question": "A tank holds 200 L, is 40% full, then 30 L is added. How many L now?", "answer": "110"},
+    {"question": "A store sells pens at 3 for $2. A customer buys 12 pens and pays "
+                 "with a $10 bill. How much change do they get, in dollars?", "answer": "2"},
+    {"question": "A car goes 90 km in 1.5 h, then 60 km in 1 h. What is its average "
+                 "speed over the whole trip, in km/h?", "answer": "60"},
+    {"question": "After a 20% increase, a price becomes $60. It is then reduced by "
+                 "$6. What is the final price, in dollars?", "answer": "54"},
+    {"question": "A tank leaks 2 L every 15 minutes. Starting from 50 L, how many "
+                 "liters remain after 2 hours?", "answer": "34"},
+    {"question": "A rectangle is 8 by 5 cm. Both sides are doubled, then 20 cm^2 is "
+                 "cut off. What is the remaining area, in cm^2?", "answer": "140"},
+    {"question": "3 workers paint 3 fences in 3 hours. At that rate, how many fences "
+                 "do 6 workers paint in 6 hours?", "answer": "12"},
 ]
 
 

@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import time
 from typing import Dict, List, Optional, Protocol
 
 
@@ -73,15 +74,19 @@ class OpenAICompatClient:
             kwargs["temperature"] = 1.0
         else:
             kwargs["temperature"] = self.temperature
-        resp = self._client.chat.completions.create(
-            model=m,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-            **kwargs,
-        )
-        return resp.choices[0].message.content or ""
+        # Retry transient gateway errors (429/cooldown/timeout) so one hiccup in a
+        # long run doesn't kill it (cf. the 9router ~30s cooldown gotcha).
+        messages = [{"role": "system", "content": system},
+                    {"role": "user", "content": user}]
+        last = None
+        for attempt in range(4):
+            try:
+                resp = self._client.chat.completions.create(model=m, messages=messages, **kwargs)
+                return resp.choices[0].message.content or ""
+            except Exception as e:  # noqa: BLE001 - surface only after retries
+                last = e
+                time.sleep(min(3 * 2 ** attempt, 30))
+        raise last
 
 
 class MLXClient:
