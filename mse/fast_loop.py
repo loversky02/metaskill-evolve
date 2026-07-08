@@ -29,14 +29,15 @@ def fast_iteration(cfg, llm, task: Task, store, dag, examples, val_examples,
 
     # worst case -> analysis -> inspirations -> child budget K
     wc, wc_r = worst_example(task, skill, examples, llm)
-    tag, analysis = analyze(llm, meta["psi"], task.desc, wc["text"], wc_r)
+    wc_text = task.describe(wc) if hasattr(task, "describe") else str(wc)
+    tag, analysis = analyze(llm, meta["psi"], task.desc, wc_text, wc_r)
     insp = retrieve(llm, meta["sigma"], tag, inspirations, cfg.l_same)
     K = allocate(llm, meta["alpha"], analysis, cfg.k_max)
 
     # propose K children, evolve, evaluate on val, commit to DAG
     best_id, best_u, best_skill = parent_id, evaluate(task, skill, val_examples, llm), skill
     for k in range(K):
-        edit = propose(llm, meta["pi"], wc["text"], analysis, insp, k, K)
+        edit = propose(llm, meta["pi"], wc_text, analysis, insp, k, K)
         child = evolve(meta["epsilon"], skill, edit)
         u = evaluate(task, child, val_examples, llm)
         snap = store.snapshot()

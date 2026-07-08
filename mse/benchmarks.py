@@ -30,6 +30,9 @@ class QATask:
     def examples(self) -> List[dict]:
         return self.items
 
+    def describe(self, example: dict) -> str:
+        return example["question"]
+
     def rollout(self, skill_text: str, example: dict, llm=None) -> str:
         if llm is None:
             return ""
@@ -103,6 +106,9 @@ class ALFWorldTask:
 
     def examples(self) -> List[dict]:
         return [{"id": i} for i in range(self.n)]
+
+    def describe(self, example: dict) -> str:
+        return f"episode {example.get('id')}"
 
     def rollout(self, skill_text: str, example: dict, llm=None) -> float:
         env = self.env_factory(example)

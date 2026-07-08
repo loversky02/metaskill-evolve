@@ -42,6 +42,9 @@ class RuleTask:
             for i in range(self.n_examples)
         ]
 
+    def describe(self, example: dict) -> str:
+        return example["text"]
+
     def rollout(self, skill_text: str, example: dict, llm=None) -> bool:
         return example["required"] in skill_text
 

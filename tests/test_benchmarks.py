@@ -53,6 +53,21 @@ def test_qatask_rollout_and_reward():
     assert task.reward(bad, task.examples()[0]) == 0.0
 
 
+def test_qatask_runs_through_evolution(tmp_path):
+    # regression: fast_iteration must not assume the RuleTask example schema
+    # (it used wc["text"]; QATask examples have "question"/"answer").
+    from mse.config import Config
+    from mse.dag import DAG
+    from mse.evolve import run_evolution
+    from mse.skills import SkillStore
+
+    task = QATask([{"question": "2+2", "answer": "4"},
+                   {"question": "3+5", "answer": "8"}], numeric_scorer())
+    st = run_evolution(Config(fast_iterations=2), _NumOracle(), task,
+                       SkillStore.create(tmp_path), DAG(), two_level=True)
+    assert len(st.history) == 3  # ran end-to-end, no KeyError
+
+
 # --- ALFWorld -------------------------------------------------------------
 class _AlfOracle:
     def complete(self, system, user, *, json_mode=False):
