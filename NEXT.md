@@ -22,15 +22,18 @@ Resume phrase: **"tiếp tục metaskill-evolve"**
   vendored greedy-DPP (`mse/retriever_dpp.py`, numpy-optional + recency fallback) —
   the automem/robocurate tie-in.
 - **TIE-IN 2 done+pushed** (super-agent axis-4 EVO {none,fast_only,two_level}).
-- **LIVE probe = both failure modes** (2026-07-08): word problems → CEILING
-  (haiku/opus/gemma-2-2b all U0=1.0, meta-gain 0); SealQA Seal-Hard bare-LLM → FLOOR
-  (haiku 0/12, no knowledge/tools). Recursion only helps the narrow middle
-  (procedure-bottleneck). Paper §4.2 + tab:law-live report both. MLXClient works
-  (chat-template + retry); a cheap U0-probe-before-big-run saved two null runs.
-  **Left (optional, bigger builds): a search-augmented agent OR a moderate
-  procedure-bottlenecked task for a positive live signal; E3 vi-gsm8k; E4 fig.**
-  Offline mechanism study stays THE clean demo; live conclusion = honest
-  narrow-regime characterisation.
+- **LIVE probe = 4 failure modes** (2026-07-08). Built BOTH escape projects:
+  `mse/search.py` (P1 keyless search agent) + `mse/synthetic.py` (P2 LetterCountTask);
+  **42 tests**. Modes: (1) strong+easy CEILING; (2) SealQA no-tools FLOOR (haiku
+  0/12); (3) Gemma-2-2B headroom but too weak to author skills (0.33 flat);
+  (4) haiku hard count = goldilocks headroom (U0 0.38–0.60) but NOISE-dominated
+  (5-ex + stochastic solver → evolution degrades, 0.6→0.4/0.0). Paper §4.2 +
+  tab:law-live report all four.
+  **Conclusion: a clean positive live signal needs capable-backbone + tools + a
+  LARGE low-variance eval at once; a $0 bare-LLM small run can't assemble all.
+  Live deliverable = failure-mode taxonomy.** If resumed: a big deterministic eval
+  (20–30 ex) on the goldilocks task, or a full search-agent run on SealQA; E3
+  vi-gsm8k; E4 fig. Offline mechanism study stays THE clean demo.
 
 ## Paper facts locked (arXiv:2607.05297)
 - Backbone: **Gemma-4 31B, frozen**, shared by all 5 agents.
