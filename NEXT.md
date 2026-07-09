@@ -30,10 +30,15 @@ Resume phrase: **"tiếp tục metaskill-evolve"**
   (5-ex + stochastic solver → evolution degrades, 0.6→0.4/0.0). Paper §4.2 +
   tab:law-live report all four.
   **Conclusion: a clean positive live signal needs capable-backbone + tools + a
-  LARGE low-variance eval at once; a $0 bare-LLM small run can't assemble all.
-  Live deliverable = failure-mode taxonomy.** If resumed: a big deterministic eval
-  (20–30 ex) on the goldilocks task, or a full search-agent run on SealQA; E3
-  vi-gsm8k; E4 fig. Offline mechanism study stays THE clean demo.
+  LARGE low-variance eval at once; a $0 bare-LLM small run can't assemble all.**
+- **Finding #5 (held-out target-transfer, DONE)** — the sharpest: evolve counting on
+  'r', test on 'e' (n=15). Seed 0.73 → single-level 0.33 (fast **−0.40**) → two-level
+  0.60 (meta **+0.267**). The evolved skill VISIBLY hardcodes the train target
+  ("circle every 'r' or 'R'") → **fast loop OVERFITS**; **two-level REGULARIZES**
+  (first live positive meta-gain, as robustness not raw accuracy; neither beats seed,
+  ±0.11 band). Paper §4.2 quotes the overfit skill. If resumed: bigger-n confirm of
+  recursion-as-anti-overfitting; search-agent SealQA run; E3 vi-gsm8k; E4 fig.
+  Offline mechanism study stays THE clean demo.
 
 ## Paper facts locked (arXiv:2607.05297)
 - Backbone: **Gemma-4 31B, frozen**, shared by all 5 agents.
