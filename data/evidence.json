@@ -1,0 +1,35 @@
+{
+  "_note": "Real numbers from the README benchmark table (single-level fast loop vs + meta recursion). Reviewed by: python -m paperforge review --repo ../metaskill-evolve",
+  "arxiv_id": "2607.05297",
+  "title": "MetaSkill-Evolve — two-timescale recursive skill evolution",
+  "hypothesis": "The fast loop is the workhorse; recursion helps only in a narrow procedure-bottleneck regime. On near-saturated tasks (ALFWorld ~92%) and strong backbones the meta-gain vanishes (+0.00). These are EN benchmarks at this eval size — whether the recursion gain transfers to Vietnamese tasks or holds at larger eval scale is untested.",
+  "claims": [
+    {
+      "claim": "Recursive (two-level) skill evolution beats the single-level fast loop on a reasoning-heavy benchmark.",
+      "metric": "OfficeQA accuracy, + meta (recursion) vs single-level",
+      "claimed_direction": "higher",
+      "baseline": 48.94,
+      "observed": 55.32,
+      "regime": "OfficeQA, single-level fast loop vs two-level recursion",
+      "notes": "+6.38 over single-level (which itself is +17.16 over no-skill — the fast loop does most of the work)."
+    },
+    {
+      "claim": "The recursion gain also holds on a search-bottlenecked benchmark.",
+      "metric": "SealQA accuracy, + meta (recursion) vs single-level",
+      "claimed_direction": "higher",
+      "baseline": 37.21,
+      "observed": 45.26,
+      "regime": "SealQA, single-level fast loop vs two-level recursion",
+      "notes": "+8.05 — the largest recursion gain, a genuine procedure-bottleneck regime."
+    },
+    {
+      "claim": "The recursion gain generalizes to embodied, near-saturated tasks.",
+      "metric": "ALFWorld success rate, + meta (recursion) vs single-level",
+      "claimed_direction": "higher",
+      "baseline": 92.31,
+      "observed": 94.23,
+      "regime": "ALFWorld, single-level fast loop vs two-level recursion",
+      "notes": "+1.92 on an already-saturated task (~92%) — the meta-gain is within noise here, matching the meta-gain-vs-strength law (+0.50 weak / +0.25 mid / +0.00 strong)."
+    }
+  ]
+}
