@@ -31,14 +31,17 @@ Resume phrase: **"tiếp tục metaskill-evolve"**
   tab:law-live report all four.
   **Conclusion: a clean positive live signal needs capable-backbone + tools + a
   LARGE low-variance eval at once; a $0 bare-LLM small run can't assemble all.**
-- **Finding #5 (held-out target-transfer, DONE)** — the sharpest: evolve counting on
-  'r', test on 'e' (n=15). Seed 0.73 → single-level 0.33 (fast **−0.40**) → two-level
-  0.60 (meta **+0.267**). The evolved skill VISIBLY hardcodes the train target
-  ("circle every 'r' or 'R'") → **fast loop OVERFITS**; **two-level REGULARIZES**
-  (first live positive meta-gain, as robustness not raw accuracy; neither beats seed,
-  ±0.11 band). Paper §4.2 quotes the overfit skill. If resumed: bigger-n confirm of
-  recursion-as-anti-overfitting; search-agent SealQA run; E3 vi-gsm8k; E4 fig.
-  Offline mechanism study stays THE clean demo.
+- **Finding #5 (held-out target-transfer + REPLICATION, DONE).** Evolve counting on
+  'r', test on 'e'. Robust part: the evolved skill VISIBLY hardcodes the train target
+  ("circle every 'r'/'R'") → **fast loop OVERFITS**. A first run (n=15) hinted at
+  two-level regularizing (+0.27 meta-gain), but a **3-seed replication (n=24) REFUTED
+  it**: per-seed +0.12/−0.21/−0.21 = **−0.10 ± 0.16, not consistent**; neither single
+  (0.26) nor two (0.17) beats seed (0.25). **Retracted to a cautionary null** in paper
+  §4.2 (kept the retracted number visible — replication is the honest move). **Honest
+  final: this $0 bare-LLM small-scale setup CANNOT establish a positive recursion
+  effect live; only robust obs = overfitting.** If resumed: the paper's larger
+  low-variance regime, or the search-agent SealQA run; E3 vi-gsm8k; E4 fig. Offline
+  mechanism study stays THE clean demo.
 
 ## Paper facts locked (arXiv:2607.05297)
 - Backbone: **Gemma-4 31B, frozen**, shared by all 5 agents.
