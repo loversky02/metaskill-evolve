@@ -189,20 +189,24 @@ Letter-count (hard) & Claude Haiku 4.5         & 0.60 & 0.00 & noise-dominated (
 \end{tabular}
 \end{table}
 
-\textbf{Skill-evolution overfits its training target; recursion regularizes.} Our
-sharpest live result comes from a held-out \emph{target-transfer} test: evolve the
-counting skill on one letter (`r'), then measure on a \emph{different} letter (`e',
-$n{=}15$). The seed skill scores $0.73$. Single-level evolution \emph{degrades} it to
-$0.33$ on transfer---and the evolved skill shows exactly why: it hardcodes the
-training target, instructing the model to ``circle every instance of `r' or `R'\,''
-regardless of the question. The fast loop overfit the training distribution. The
-two-level system partially corrects this ($0.60$; a $+0.27$ meta-gain over
-single-level), producing a more general procedure---the slow loop's value surfacing
-as \emph{robustness}, not raw accuracy. Neither beats the seed here (the whole
-evolution still net-hurts on transfer, and $n{=}15$ leaves a $\pm0.11$ band), but the
-direction is the honest takeaway: unconstrained self-improvement can overfit its own
-edits, and the recursive layer acts as a mild regularizer against it. This is the
-live counterpart to the paper's frozen-backbone claim---and a caution the hype omits.
+\textbf{Skill-evolution overfits its training target; a tentative regularizer effect
+does \emph{not} replicate.} Our deepest live probe is a held-out
+\emph{target-transfer} test: evolve the counting skill on one letter (`r'), then
+measure on a \emph{different} letter (`e'). The overfitting is real and visible---the
+evolved skill hardcodes the training target, instructing the model to ``circle every
+instance of `r' or `R'\,'' regardless of the question, and single-level evolution
+drops held-out accuracy below the seed. A first run ($n{=}15$) suggested the two-level
+system corrected this (a $+0.27$ meta-gain), hinting at recursion-as-regularizer. We
+put that hint to a replication: 3 seeds on a larger held-out set ($n{=}24$). It did
+\emph{not} survive. The per-seed meta-gains were $+0.12, -0.21, -0.21$
+($-0.10 \pm 0.16$; not consistently positive), and neither single- nor two-level
+reliably beat the seed ($0.26$ and $0.17$ vs.\ seed $0.25$). The tentative effect was
+within noise. We report this as a cautionary null: the one robust observation is that
+the evolved skill \emph{overfits} its training target; the live signal is otherwise
+noise-dominated, and we could \emph{not} establish a positive recursion effect at this
+scale. Testing recursion-as-regularizer properly needs the larger, lower-variance
+regime the paper itself uses. (We keep the retracted single-run number visible on
+purpose: running the replication is the honest move the hype skips.)
 
 \subsection{English$\rightarrow$Vietnamese meta transfer}\label{sec:transfer}
 Meta-skills are language-agnostic improvement policies. We ask whether a meta-skill
